@@ -62,7 +62,7 @@ class _NameEntryScreenState extends ConsumerState<NameEntryScreen> {
     return Scaffold(
       body: Center(
         child: Container(
-          maxWidth: 500,
+          constraints: const BoxConstraints(maxWidth: 500),
           padding: const EdgeInsets.all(24.0),
           child: Form(
             key: _formKey,
