@@ -2,6 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../providers/providers.dart';
 import '../startup_screen.dart';
+import '../inventory/inventory_list_screen.dart';
+import '../inventory/transaction_history_screen.dart';
+import '../settings/settings_screen.dart';
+import '../batch_scan/batch_scan_screen.dart';
+import 'export_center.dart';
 import 'package:intl/intl.dart';
 
 class AdminDashboard extends ConsumerWidget {
@@ -134,38 +139,22 @@ class AdminDashboard extends ConsumerWidget {
           ListTile(
             leading: const Icon(Icons.warehouse),
             title: const Text('All Main Inventory'),
-            onTap: () {},
-          ),
-          ListTile(
-            leading: const Icon(Icons.person),
-            title: const Text('Employee On-Hand'),
-            onTap: () {},
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const InventoryListScreen(isAdmin: true))),
           ),
           ListTile(
             leading: const Icon(Icons.history),
             title: const Text('Transaction History'),
-            onTap: () {},
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const TransactionHistoryScreen())),
           ),
-          ListTile(
-            leading: const Icon(Icons.copy),
-            title: const Text('Duplicate Logs'),
-            onTap: () {},
-          ),
-          ListTile(
-            leading: const Icon(Icons.error_outline),
-            title: const Text('Error Logs'),
-            onTap: () {},
-          ),
-          const Divider(),
           ListTile(
             leading: const Icon(Icons.file_download),
             title: const Text('Export Center'),
-            onTap: () {},
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ExportCenter())),
           ),
           ListTile(
             leading: const Icon(Icons.settings),
             title: const Text('App Settings'),
-            onTap: () {},
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsScreen())),
           ),
         ],
       ),
