@@ -55,7 +55,7 @@ class UserSession extends HiveObject {
     String? defaultTruckNumber,
   }) {
     final normalized = displayName.trim().toLowerCase();
-    final role = normalized == 'bryan' ? UserRole.admin : UserRole.standardUser;
+    final role = (normalized == 'bryan' || normalized == 'jared') ? UserRole.admin : UserRole.standardUser;
     
     return UserSession(
       displayName: displayName.trim(),

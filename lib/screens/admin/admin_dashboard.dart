@@ -14,6 +14,7 @@ class AdminDashboard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final user = ref.watch(currentUserProvider);
     final inventoryAsync = ref.watch(allInventoryProvider);
     final employeeInvAsync = ref.watch(allEmployeeInventoryProvider);
     final transactionsAsync = ref.watch(allTransactionsProvider);
@@ -21,7 +22,7 @@ class AdminDashboard extends ConsumerWidget {
     
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Admin View — Bryan'),
+        title: Text('Admin View — ${user?.displayName ?? "Admin"}'),
         actions: [
           TextButton.icon(
             onPressed: () {
@@ -36,7 +37,7 @@ class AdminDashboard extends ConsumerWidget {
           ),
         ],
       ),
-      drawer: _buildDrawer(context),
+      drawer: _buildDrawer(context, user?.displayName ?? 'Admin'),
       body: RefreshIndicator(
         onRefresh: () async {
           ref.invalidate(allInventoryProvider);
@@ -161,15 +162,15 @@ class AdminDashboard extends ConsumerWidget {
     );
   }
 
-  Widget _buildDrawer(BuildContext context) {
+  Widget _buildDrawer(BuildContext context, String userName) {
     return Drawer(
       child: Column(
         children: [
-          const UserAccountsDrawerHeader(
-            accountName: Text('Bryan (Admin)'),
-            accountEmail: Text('Inventory Controller'),
-            currentAccountPicture: CircleAvatar(child: Icon(Icons.admin_panel_settings)),
-            decoration: BoxDecoration(color: Colors.green),
+          UserAccountsDrawerHeader(
+            accountName: Text('$userName (Admin)'),
+            accountEmail: const Text('Inventory Controller'),
+            currentAccountPicture: const CircleAvatar(child: Icon(Icons.admin_panel_settings)),
+            decoration: const BoxDecoration(color: Colors.green),
           ),
           ListTile(
             leading: const Icon(Icons.dashboard),
