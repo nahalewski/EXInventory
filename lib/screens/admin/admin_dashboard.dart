@@ -14,7 +14,10 @@ class AdminDashboard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final user = ref.watch(currentUserProvider);
+    final inventoryAsync = ref.watch(allInventoryProvider);
+    final employeeInvAsync = ref.watch(allEmployeeInventoryProvider);
+    final transactionsAsync = ref.watch(allTransactionsProvider);
+    final duplicatesAsync = ref.watch(allDuplicatesProvider);
     
     return Scaffold(
       appBar: AppBar(
@@ -34,42 +37,54 @@ class AdminDashboard extends ConsumerWidget {
         ],
       ),
       drawer: _buildDrawer(context),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Quick Glance',
-              style: Theme.of(context).textTheme.headlineSmall,
-            ),
-            const SizedBox(height: 16),
-            GridView.count(
-              crossAxisCount: MediaQuery.of(context).size.width > 600 ? 4 : 2,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              mainAxisSpacing: 16,
-              crossAxisSpacing: 16,
-              childAspectRatio: 1.5,
-              children: [
-                _buildStatCard(context, 'Main Inventory', '4,250', Icons.warehouse, Colors.blue),
-                _buildStatCard(context, 'Employee On-Hand', '840', Icons.person, Colors.orange),
-                _buildStatCard(context, 'Total Company', '5,090', Icons.business, Colors.green),
-                _buildStatCard(context, 'Total Used', '1,120', Icons.trending_up, Colors.red),
-                _buildStatCard(context, 'Low Stock Items', '12', Icons.warning, Colors.amber),
-                _buildStatCard(context, 'Active Employees', '8', Icons.people, Colors.purple),
-                _buildStatCard(context, 'Duplicates Today', '3', Icons.copy, Colors.teal),
-                _buildStatCard(context, 'Errors Today', '0', Icons.error, Colors.grey),
-              ],
-            ),
-            const SizedBox(height: 32),
-            Text(
-              'Recent Transactions',
-              style: Theme.of(context).textTheme.headlineSmall,
-            ),
-            const SizedBox(height: 16),
-            _buildRecentTransactions(context),
-          ],
+      body: RefreshIndicator(
+        onRefresh: () async {
+          ref.invalidate(allInventoryProvider);
+          ref.invalidate(allEmployeeInventoryProvider);
+          ref.invalidate(allTransactionsProvider);
+          ref.invalidate(allDuplicatesProvider);
+        },
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Quick Glance',
+                style: Theme.of(context).textTheme.headlineSmall,
+              ),
+              const SizedBox(height: 16),
+              GridView.count(
+                crossAxisCount: MediaQuery.of(context).size.width > 600 ? 4 : 2,
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                mainAxisSpacing: 16,
+                crossAxisSpacing: 16,
+                childAspectRatio: 1.5,
+                children: [
+                  _buildAsyncStatCard(context, 'Main Inventory', inventoryAsync, (items) => items.fold(0.0, (sum, i) => sum + i.mainQuantity).toStringAsFixed(0), Icons.warehouse, Colors.blue),
+                  _buildAsyncStatCard(context, 'Employee On-Hand', employeeInvAsync, (items) => items.fold(0.0, (sum, i) => sum + i.quantityOnHand).toStringAsFixed(0), Icons.person, Colors.orange),
+                  _buildAsyncStatCard(context, 'Total Company', inventoryAsync, (items) => items.fold(0.0, (sum, i) => sum + i.totalCompanyQuantity).toStringAsFixed(0), Icons.business, Colors.green),
+                  _buildAsyncStatCard(context, 'Total Used', inventoryAsync, (items) => items.fold(0.0, (sum, i) => sum + i.totalUsed).toStringAsFixed(0), Icons.trending_up, Colors.red),
+                  _buildAsyncStatCard(context, 'Low Stock Items', inventoryAsync, (items) => items.where((i) => i.mainQuantity <= i.lowStockThreshold).length.toString(), Icons.warning, Colors.amber),
+                  _buildAsyncStatCard(context, 'Active Employees', employeeInvAsync, (items) => items.map((i) => i.normalizedEmployeeName).toSet().length.toString(), Icons.people, Colors.purple),
+                  _buildAsyncStatCard(context, 'Duplicates Today', duplicatesAsync, (items) => items.length.toString(), Icons.copy, Colors.teal),
+                  _buildAsyncStatCard(context, 'Errors Today', transactionsAsync, (items) => '0', Icons.error, Colors.grey),
+                ],
+              ),
+              const SizedBox(height: 32),
+              Text(
+                'Recent Transactions',
+                style: Theme.of(context).textTheme.headlineSmall,
+              ),
+              const SizedBox(height: 16),
+              transactionsAsync.when(
+                data: (txs) => _buildRecentTransactions(context, txs),
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (e, _) => Text('Error: $e'),
+              ),
+            ],
+          ),
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
@@ -84,6 +99,21 @@ class AdminDashboard extends ConsumerWidget {
     );
   }
 
+  Widget _buildAsyncStatCard<T>(
+    BuildContext context,
+    String title,
+    AsyncValue<T> asyncValue,
+    String Function(T) formatter,
+    IconData icon,
+    Color color,
+  ) {
+    return asyncValue.when(
+      data: (data) => _buildStatCard(context, title, formatter(data), icon, color),
+      loading: () => _buildStatCard(context, title, '...', icon, color),
+      error: (_, __) => _buildStatCard(context, title, 'Err', icon, color),
+    );
+  }
+
   Widget _buildStatCard(BuildContext context, String title, String value, IconData icon, Color color) {
     return Card(
       elevation: 2,
@@ -94,7 +124,12 @@ class AdminDashboard extends ConsumerWidget {
           children: [
             Icon(icon, color: color),
             const SizedBox(height: 8),
-            Text(value, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+            FittedBox(
+              child: Text(
+                value,
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+              ),
+            ),
             Text(title, textAlign: TextAlign.center, style: Theme.of(context).textTheme.bodySmall),
           ],
         ),
@@ -102,19 +137,24 @@ class AdminDashboard extends ConsumerWidget {
     );
   }
 
-  Widget _buildRecentTransactions(BuildContext context) {
+  Widget _buildRecentTransactions(BuildContext context, List txs) {
+    if (txs.isEmpty) {
+      return const Card(child: Padding(padding: EdgeInsets.all(16), child: Center(child: Text('No transactions yet.'))));
+    }
+    final recentTxs = txs.take(5).toList();
     return Card(
       child: ListView.separated(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
-        itemCount: 5,
+        itemCount: recentTxs.length,
         separatorBuilder: (_, __) => const Divider(),
         itemBuilder: (context, index) {
+          final tx = recentTxs[index];
           return ListTile(
             leading: const CircleAvatar(child: Icon(Icons.swap_horiz)),
-            title: Text('Transferred 10x Item $index'),
-            subtitle: Text('By John Doe • Site A • ${DateFormat('jm').format(DateTime.now())}'),
-            trailing: const Icon(Icons.chevron_right),
+            title: Text('${tx.action.name.toUpperCase()}: ${tx.itemName}'),
+            subtitle: Text('By ${tx.userName} • ${tx.siteName ?? "N/A"} • ${DateFormat('jm').format(tx.timestamp)}'),
+            trailing: Text(tx.quantityChanged.toStringAsFixed(0)),
           );
         },
       ),

@@ -6,6 +6,10 @@ import '../services/duplicate_service.dart';
 import '../services/csv_service.dart';
 import '../models/user_session.dart';
 import '../models/app_settings.dart';
+import '../models/inventory_item.dart';
+import '../models/employee_inventory.dart';
+import '../models/transaction.dart';
+import '../models/duplicate_scan.dart';
 
 // Repositories
 final inventoryRepoProvider = Provider<IInventoryRepository>((ref) => LocalInventoryRepository());
@@ -46,3 +50,9 @@ final sessionLoaderProvider = FutureProvider<UserSession?>((ref) async {
   ref.read(currentUserProvider.notifier).state = session;
   return session;
 });
+
+// Data providers
+final allInventoryProvider = FutureProvider<List<InventoryItem>>((ref) => ref.watch(inventoryRepoProvider).getAll());
+final allEmployeeInventoryProvider = FutureProvider<List<EmployeeInventoryBalance>>((ref) => ref.watch(employeeRepoProvider).getAll());
+final allTransactionsProvider = FutureProvider<List<InventoryTransaction>>((ref) => ref.watch(transactionRepoProvider).getAll());
+final allDuplicatesProvider = FutureProvider<List<DuplicateScanEvent>>((ref) => ref.watch(duplicateRepoProvider).getAll());

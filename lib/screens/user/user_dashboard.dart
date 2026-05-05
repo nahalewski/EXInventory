@@ -11,6 +11,8 @@ class UserDashboard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(currentUserProvider);
+    final transactionsAsync = ref.watch(allTransactionsProvider);
+    final employeeInvAsync = ref.watch(allEmployeeInventoryProvider);
     
     return Scaffold(
       appBar: AppBar(
@@ -29,57 +31,91 @@ class UserDashboard extends ConsumerWidget {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Card(
-              color: Colors.green.shade50,
-              child: ListTile(
-                leading: const Icon(Icons.person, color: Colors.green),
-                title: Text('Welcome, ${user?.displayName}'),
-                subtitle: Text('Role: Standard User'),
-              ),
-            ),
-            const SizedBox(height: 24),
-            Text(
-              'Your Quick Stats',
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            const SizedBox(height: 16),
-            GridView.count(
-              crossAxisCount: 2,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              mainAxisSpacing: 16,
-              crossAxisSpacing: 16,
-              childAspectRatio: 1.5,
-              children: [
-                _buildStatCard(context, 'My On-Hand', '42', Icons.inventory_2, Colors.blue),
-                _buildStatCard(context, 'My Scans Today', '12', Icons.qr_code_scanner, Colors.green),
-              ],
-            ),
-            const SizedBox(height: 32),
-            Text(
-              'My Recent Scans',
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            const SizedBox(height: 16),
-            _buildRecentScans(context),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: () {},
-                    icon: const Icon(Icons.history),
-                    label: const Text('View All My History'),
-                  ),
+      body: RefreshIndicator(
+        onRefresh: () async {
+          ref.invalidate(allTransactionsProvider);
+          ref.invalidate(allEmployeeInventoryProvider);
+        },
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Card(
+                color: Colors.green.shade50,
+                child: ListTile(
+                  leading: const Icon(Icons.person, color: Colors.green),
+                  title: Text('Welcome, ${user?.displayName}'),
+                  subtitle: Text('Role: Standard User'),
                 ),
-              ],
-            ),
-          ],
+              ),
+              const SizedBox(height: 24),
+              Text(
+                'Your Quick Stats',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              const SizedBox(height: 16),
+              GridView.count(
+                crossAxisCount: 2,
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                mainAxisSpacing: 16,
+                crossAxisSpacing: 16,
+                childAspectRatio: 1.5,
+                children: [
+                  employeeInvAsync.when(
+                    data: (items) {
+                      final myInv = items.where((i) => i.normalizedEmployeeName == user?.normalizedName);
+                      final count = myInv.fold(0.0, (sum, i) => sum + i.quantityOnHand);
+                      return _buildStatCard(context, 'My On-Hand', count.toStringAsFixed(0), Icons.inventory_2, Colors.blue);
+                    },
+                    loading: () => _buildStatCard(context, 'My On-Hand', '...', Icons.inventory_2, Colors.blue),
+                    error: (_, __) => _buildStatCard(context, 'My On-Hand', 'Err', Icons.inventory_2, Colors.blue),
+                  ),
+                  transactionsAsync.when(
+                    data: (txs) {
+                      final today = DateTime.now();
+                      final myToday = txs.where((t) => 
+                        t.normalizedUserName == user?.normalizedName && 
+                        t.timestamp.year == today.year && 
+                        t.timestamp.month == today.month && 
+                        t.timestamp.day == today.day
+                      );
+                      return _buildStatCard(context, 'My Scans Today', myToday.length.toString(), Icons.qr_code_scanner, Colors.green);
+                    },
+                    loading: () => _buildStatCard(context, 'My Scans Today', '...', Icons.qr_code_scanner, Colors.green),
+                    error: (_, __) => _buildStatCard(context, 'My Scans Today', 'Err', Icons.qr_code_scanner, Colors.green),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 32),
+              Text(
+                'My Recent Scans',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              const SizedBox(height: 16),
+              transactionsAsync.when(
+                data: (txs) {
+                  final myTxs = txs.where((t) => t.normalizedUserName == user?.normalizedName).take(5).toList();
+                  return _buildRecentScans(context, myTxs);
+                },
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (e, _) => Text('Error: $e'),
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: () {},
+                      icon: const Icon(Icons.history),
+                      label: const Text('View All My History'),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
       bottomNavigationBar: Padding(
@@ -118,7 +154,7 @@ class UserDashboard extends ConsumerWidget {
           children: [
             Icon(icon, color: color),
             const SizedBox(height: 8),
-            Text(value, style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold)),
+            FittedBox(child: Text(value, style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold))),
             Text(title, style: Theme.of(context).textTheme.bodySmall),
           ],
         ),
@@ -126,18 +162,22 @@ class UserDashboard extends ConsumerWidget {
     );
   }
 
-  Widget _buildRecentScans(BuildContext context) {
+  Widget _buildRecentScans(BuildContext context, List txs) {
+    if (txs.isEmpty) {
+      return const Card(child: Padding(padding: EdgeInsets.all(16), child: Center(child: Text('No scans yet.'))));
+    }
     return Card(
       child: ListView.separated(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
-        itemCount: 3,
+        itemCount: txs.length,
         separatorBuilder: (_, __) => const Divider(),
         itemBuilder: (context, index) {
+          final tx = txs[index];
           return ListTile(
             leading: const Icon(Icons.check_circle, color: Colors.green),
-            title: Text('Used 1x Item ${index + 100}'),
-            subtitle: Text('Site X • ${DateFormat('jm').format(DateTime.now())}'),
+            title: Text('${tx.action.name.toUpperCase()}: ${tx.itemName}'),
+            subtitle: Text('${tx.siteName ?? "N/A"} • ${DateFormat('jm').format(tx.timestamp)}'),
           );
         },
       ),
