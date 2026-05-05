@@ -1,0 +1,65 @@
+// GENERATED CODE - DO NOT MODIFY BY HAND
+
+part of 'app_settings.dart';
+
+// **************************************************************************
+// TypeAdapterGenerator
+// **************************************************************************
+
+class AppSettingsAdapter extends TypeAdapter<AppSettings> {
+  @override
+  final int typeId = 9;
+
+  @override
+  AppSettings read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return AppSettings(
+      duplicateHandlingMode: fields[0] as DuplicateHandlingMode,
+      allowNegativeMainInventory: fields[1] as bool,
+      allowNegativeEmployeeOnHand: fields[2] as bool,
+      allowDirectUseFromMain: fields[3] as bool,
+      standardUsersCanReceive: fields[4] as bool,
+      standardUsersCanExportAll: fields[5] as bool,
+      standardUsersCanAdjust: fields[6] as bool,
+      defaultScanQuantity: fields[7] as double,
+      debounceCooldownMs: fields[8] as int,
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, AppSettings obj) {
+    writer
+      ..writeByte(9)
+      ..writeByte(0)
+      ..write(obj.duplicateHandlingMode)
+      ..writeByte(1)
+      ..write(obj.allowNegativeMainInventory)
+      ..writeByte(2)
+      ..write(obj.allowNegativeEmployeeOnHand)
+      ..writeByte(3)
+      ..write(obj.allowDirectUseFromMain)
+      ..writeByte(4)
+      ..write(obj.standardUsersCanReceive)
+      ..writeByte(5)
+      ..write(obj.standardUsersCanExportAll)
+      ..writeByte(6)
+      ..write(obj.standardUsersCanAdjust)
+      ..writeByte(7)
+      ..write(obj.defaultScanQuantity)
+      ..writeByte(8)
+      ..write(obj.debounceCooldownMs);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is AppSettingsAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
