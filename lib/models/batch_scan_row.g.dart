@@ -1,0 +1,122 @@
+// GENERATED CODE - DO NOT MODIFY BY HAND
+
+part of 'batch_scan_row.dart';
+
+// **************************************************************************
+// TypeAdapterGenerator
+// **************************************************************************
+
+class BatchScanRowAdapter extends TypeAdapter<BatchScanRow> {
+  @override
+  final int typeId = 8;
+
+  @override
+  BatchScanRow read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return BatchScanRow(
+      lineNumber: fields[0] as int,
+      timestamp: fields[1] as DateTime,
+      userName: fields[2] as String,
+      normalizedUserName: fields[3] as String,
+      action: fields[4] as InventoryAction,
+      barcode: fields[5] as String,
+      qrCodeValue: fields[6] as String,
+      sku: fields[7] as String,
+      itemName: fields[8] as String,
+      quantity: fields[9] as double,
+      location: fields[10] as String,
+      siteName: fields[11] as String,
+      jobNumber: fields[12] as String,
+      truckNumber: fields[13] as String,
+      notes: fields[14] as String,
+      status: fields[15] as String,
+      isDuplicate: fields[16] as bool,
+      duplicateOfLineNumber: fields[17] as int?,
+      duplicateStatus: fields[18] as String,
+      duplicateCountMerged: fields[19] as int,
+      mainQuantityBefore: fields[20] as double,
+      mainQuantityAfter: fields[21] as double,
+      employeeQuantityBefore: fields[22] as double,
+      employeeQuantityAfter: fields[23] as double,
+      fromBucket: fields[24] as String,
+      toBucket: fields[25] as String,
+      visibleToAdmin: fields[26] as bool,
+      ownerUserName: fields[27] as String,
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, BatchScanRow obj) {
+    writer
+      ..writeByte(28)
+      ..writeByte(0)
+      ..write(obj.lineNumber)
+      ..writeByte(1)
+      ..write(obj.timestamp)
+      ..writeByte(2)
+      ..write(obj.userName)
+      ..writeByte(3)
+      ..write(obj.normalizedUserName)
+      ..writeByte(4)
+      ..write(obj.action)
+      ..writeByte(5)
+      ..write(obj.barcode)
+      ..writeByte(6)
+      ..write(obj.qrCodeValue)
+      ..writeByte(7)
+      ..write(obj.sku)
+      ..writeByte(8)
+      ..write(obj.itemName)
+      ..writeByte(9)
+      ..write(obj.quantity)
+      ..writeByte(10)
+      ..write(obj.location)
+      ..writeByte(11)
+      ..write(obj.siteName)
+      ..writeByte(12)
+      ..write(obj.jobNumber)
+      ..writeByte(13)
+      ..write(obj.truckNumber)
+      ..writeByte(14)
+      ..write(obj.notes)
+      ..writeByte(15)
+      ..write(obj.status)
+      ..writeByte(16)
+      ..write(obj.isDuplicate)
+      ..writeByte(17)
+      ..write(obj.duplicateOfLineNumber)
+      ..writeByte(18)
+      ..write(obj.duplicateStatus)
+      ..writeByte(19)
+      ..write(obj.duplicateCountMerged)
+      ..writeByte(20)
+      ..write(obj.mainQuantityBefore)
+      ..writeByte(21)
+      ..write(obj.mainQuantityAfter)
+      ..writeByte(22)
+      ..write(obj.employeeQuantityBefore)
+      ..writeByte(23)
+      ..write(obj.employeeQuantityAfter)
+      ..writeByte(24)
+      ..write(obj.fromBucket)
+      ..writeByte(25)
+      ..write(obj.toBucket)
+      ..writeByte(26)
+      ..write(obj.visibleToAdmin)
+      ..writeByte(27)
+      ..write(obj.ownerUserName);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is BatchScanRowAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}

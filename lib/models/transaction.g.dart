@@ -1,0 +1,164 @@
+// GENERATED CODE - DO NOT MODIFY BY HAND
+
+part of 'transaction.dart';
+
+// **************************************************************************
+// TypeAdapterGenerator
+// **************************************************************************
+
+class InventoryTransactionAdapter extends TypeAdapter<InventoryTransaction> {
+  @override
+  final int typeId = 5;
+
+  @override
+  InventoryTransaction read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return InventoryTransaction(
+      id: fields[0] as String,
+      timestamp: fields[1] as DateTime,
+      userName: fields[2] as String,
+      normalizedUserName: fields[3] as String,
+      action: fields[4] as InventoryAction,
+      itemId: fields[5] as String,
+      itemName: fields[6] as String,
+      sku: fields[7] as String,
+      barcode: fields[8] as String,
+      qrCodeValue: fields[9] as String,
+      quantityChanged: fields[10] as double,
+      mainQuantityBefore: fields[11] as double,
+      mainQuantityAfter: fields[12] as double,
+      employeeQuantityBefore: fields[13] as double,
+      employeeQuantityAfter: fields[14] as double,
+      fromBucket: fields[15] as String,
+      toBucket: fields[16] as String,
+      employeeName: fields[17] as String?,
+      normalizedEmployeeName: fields[18] as String?,
+      siteName: fields[19] as String?,
+      jobNumber: fields[20] as String?,
+      truckNumber: fields[21] as String?,
+      notes: fields[22] as String?,
+      createdByRole: fields[23] as String,
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, InventoryTransaction obj) {
+    writer
+      ..writeByte(24)
+      ..writeByte(0)
+      ..write(obj.id)
+      ..writeByte(1)
+      ..write(obj.timestamp)
+      ..writeByte(2)
+      ..write(obj.userName)
+      ..writeByte(3)
+      ..write(obj.normalizedUserName)
+      ..writeByte(4)
+      ..write(obj.action)
+      ..writeByte(5)
+      ..write(obj.itemId)
+      ..writeByte(6)
+      ..write(obj.itemName)
+      ..writeByte(7)
+      ..write(obj.sku)
+      ..writeByte(8)
+      ..write(obj.barcode)
+      ..writeByte(9)
+      ..write(obj.qrCodeValue)
+      ..writeByte(10)
+      ..write(obj.quantityChanged)
+      ..writeByte(11)
+      ..write(obj.mainQuantityBefore)
+      ..writeByte(12)
+      ..write(obj.mainQuantityAfter)
+      ..writeByte(13)
+      ..write(obj.employeeQuantityBefore)
+      ..writeByte(14)
+      ..write(obj.employeeQuantityAfter)
+      ..writeByte(15)
+      ..write(obj.fromBucket)
+      ..writeByte(16)
+      ..write(obj.toBucket)
+      ..writeByte(17)
+      ..write(obj.employeeName)
+      ..writeByte(18)
+      ..write(obj.normalizedEmployeeName)
+      ..writeByte(19)
+      ..write(obj.siteName)
+      ..writeByte(20)
+      ..write(obj.jobNumber)
+      ..writeByte(21)
+      ..write(obj.truckNumber)
+      ..writeByte(22)
+      ..write(obj.notes)
+      ..writeByte(23)
+      ..write(obj.createdByRole);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is InventoryTransactionAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class InventoryActionAdapter extends TypeAdapter<InventoryAction> {
+  @override
+  final int typeId = 4;
+
+  @override
+  InventoryAction read(BinaryReader reader) {
+    switch (reader.readByte()) {
+      case 0:
+        return InventoryAction.receiveMain;
+      case 1:
+        return InventoryAction.transferToEmployee;
+      case 2:
+        return InventoryAction.useFromEmployee;
+      case 3:
+        return InventoryAction.returnToMain;
+      case 4:
+        return InventoryAction.adjustment;
+      default:
+        return InventoryAction.receiveMain;
+    }
+  }
+
+  @override
+  void write(BinaryWriter writer, InventoryAction obj) {
+    switch (obj) {
+      case InventoryAction.receiveMain:
+        writer.writeByte(0);
+        break;
+      case InventoryAction.transferToEmployee:
+        writer.writeByte(1);
+        break;
+      case InventoryAction.useFromEmployee:
+        writer.writeByte(2);
+        break;
+      case InventoryAction.returnToMain:
+        writer.writeByte(3);
+        break;
+      case InventoryAction.adjustment:
+        writer.writeByte(4);
+        break;
+    }
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is InventoryActionAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
