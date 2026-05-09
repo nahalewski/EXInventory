@@ -1,0 +1,1 @@
+ /Users/bennahalewski/Documents/Experis\ Inventory\ App/.dart_tool/flutter_build/b70e5806353cd8f8b75c5b5cc088413f/dart_build_result.json:  /Users/bennahalewski/Documents/Experis\ Inventory\ App/.dart_tool/package_config.json /Users/bennahalewski/Documents/Experis\ Inventory\ App/pubspec.yaml /opt/homebrew/Caskroom/flutter/3.29.3/flutter/bin/cache/dart-sdk/version

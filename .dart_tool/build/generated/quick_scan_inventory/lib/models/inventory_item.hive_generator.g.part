@@ -1,0 +1,79 @@
+// **************************************************************************
+// TypeAdapterGenerator
+// **************************************************************************
+
+class InventoryItemAdapter extends TypeAdapter<InventoryItem> {
+  @override
+  final int typeId = 2;
+
+  @override
+  InventoryItem read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return InventoryItem(
+      id: fields[0] as String,
+      itemName: fields[1] as String,
+      sku: fields[2] as String,
+      barcode: fields[3] as String,
+      qrCodeValue: fields[4] as String,
+      mainQuantity: fields[5] as double,
+      totalEmployeeOnHand: fields[6] as double,
+      totalUsed: fields[7] as double,
+      category: fields[8] as String,
+      location: fields[9] as String,
+      lowStockThreshold: fields[10] as double,
+      createdAt: fields[11] as DateTime,
+      updatedAt: fields[12] as DateTime,
+      createdBy: fields[13] as String,
+      updatedBy: fields[14] as String,
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, InventoryItem obj) {
+    writer
+      ..writeByte(15)
+      ..writeByte(0)
+      ..write(obj.id)
+      ..writeByte(1)
+      ..write(obj.itemName)
+      ..writeByte(2)
+      ..write(obj.sku)
+      ..writeByte(3)
+      ..write(obj.barcode)
+      ..writeByte(4)
+      ..write(obj.qrCodeValue)
+      ..writeByte(5)
+      ..write(obj.mainQuantity)
+      ..writeByte(6)
+      ..write(obj.totalEmployeeOnHand)
+      ..writeByte(7)
+      ..write(obj.totalUsed)
+      ..writeByte(8)
+      ..write(obj.category)
+      ..writeByte(9)
+      ..write(obj.location)
+      ..writeByte(10)
+      ..write(obj.lowStockThreshold)
+      ..writeByte(11)
+      ..write(obj.createdAt)
+      ..writeByte(12)
+      ..write(obj.updatedAt)
+      ..writeByte(13)
+      ..write(obj.createdBy)
+      ..writeByte(14)
+      ..write(obj.updatedBy);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is InventoryItemAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}

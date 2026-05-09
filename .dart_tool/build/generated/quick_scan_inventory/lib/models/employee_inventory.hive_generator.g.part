@@ -1,0 +1,74 @@
+// **************************************************************************
+// TypeAdapterGenerator
+// **************************************************************************
+
+class EmployeeInventoryBalanceAdapter
+    extends TypeAdapter<EmployeeInventoryBalance> {
+  @override
+  final int typeId = 3;
+
+  @override
+  EmployeeInventoryBalance read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return EmployeeInventoryBalance(
+      id: fields[0] as String,
+      employeeName: fields[1] as String,
+      normalizedEmployeeName: fields[2] as String,
+      itemId: fields[3] as String,
+      itemName: fields[4] as String,
+      sku: fields[5] as String,
+      barcode: fields[6] as String,
+      qrCodeValue: fields[7] as String,
+      quantityOnHand: fields[8] as double,
+      currentSite: fields[9] as String?,
+      jobNumber: fields[10] as String?,
+      truckNumber: fields[11] as String?,
+      updatedAt: fields[12] as DateTime,
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, EmployeeInventoryBalance obj) {
+    writer
+      ..writeByte(13)
+      ..writeByte(0)
+      ..write(obj.id)
+      ..writeByte(1)
+      ..write(obj.employeeName)
+      ..writeByte(2)
+      ..write(obj.normalizedEmployeeName)
+      ..writeByte(3)
+      ..write(obj.itemId)
+      ..writeByte(4)
+      ..write(obj.itemName)
+      ..writeByte(5)
+      ..write(obj.sku)
+      ..writeByte(6)
+      ..write(obj.barcode)
+      ..writeByte(7)
+      ..write(obj.qrCodeValue)
+      ..writeByte(8)
+      ..write(obj.quantityOnHand)
+      ..writeByte(9)
+      ..write(obj.currentSite)
+      ..writeByte(10)
+      ..write(obj.jobNumber)
+      ..writeByte(11)
+      ..write(obj.truckNumber)
+      ..writeByte(12)
+      ..write(obj.updatedAt);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EmployeeInventoryBalanceAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
