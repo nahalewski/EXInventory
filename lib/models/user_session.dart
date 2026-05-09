@@ -49,18 +49,23 @@ class UserSession extends HiveObject {
 
   factory UserSession.create({
     required String displayName,
+    UserRole? role,
     String? defaultLocation,
     String? defaultSiteName,
     String? defaultJobNumber,
     String? defaultTruckNumber,
   }) {
     final normalized = displayName.trim().toLowerCase();
-    final role = (normalized == 'bryan' || normalized == 'jared') ? UserRole.admin : UserRole.standardUser;
-    
+    // Role comes from credentials; fall back to name-check for legacy callers.
+    final resolvedRole = role ??
+        ((normalized == 'bryan' || normalized == 'jared')
+            ? UserRole.admin
+            : UserRole.standardUser);
+
     return UserSession(
       displayName: displayName.trim(),
       normalizedName: normalized,
-      role: role,
+      role: resolvedRole,
       defaultLocation: defaultLocation,
       defaultSiteName: defaultSiteName,
       defaultJobNumber: defaultJobNumber,

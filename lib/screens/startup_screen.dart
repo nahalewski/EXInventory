@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/providers.dart';
-import 'name_entry_screen.dart';
+import 'login_screen.dart';
 import 'admin/admin_dashboard.dart';
 import 'user/user_dashboard.dart';
 
@@ -16,7 +16,7 @@ class StartupScreen extends ConsumerWidget {
     return sessionAsync.when(
       data: (session) {
         if (session == null) {
-          return const NameEntryScreen();
+          return const LoginScreen();
         }
         
         return Scaffold(
@@ -52,7 +52,7 @@ class StartupScreen extends ConsumerWidget {
                     ref.read(userSessionRepoProvider).clearSession();
                     ref.read(currentUserProvider.notifier).state = null;
                     Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(builder: (_) => const NameEntryScreen()),
+                      MaterialPageRoute(builder: (_) => const LoginScreen()),
                     );
                   },
                   child: const Text('Change User'),
